@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMORA Store</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b0b14;
+  color: white;
+}
+
+/* ================= NAVBAR (FULL FIXED STICKY) ================= */
+.navbar {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  padding: 15px 30px;
+
+  background: rgba(20, 20, 35, 0.92);
+  backdrop-filter: blur(12px);
+
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+
+  box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  gap: 10px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #00ffcc;
+  justify-self: start;
+}
+
+.search-box {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.search-box input {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
+
+.cart {
+  justify-self: end;
+  background: #1a1a2e;
+  padding: 8px 12px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* ================= HERO ================= */
+.hero {
+  height: 80vh;
+  background: url("https://images.unsplash.com/photo-1523275335684-37898b6baf30") center/cover no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.hero button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  background: #00ffcc;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ================= FILTERS ================= */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.filters button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #1a1a2e;
+  color: white;
+  cursor: pointer;
+}
+
+.filters button:hover {
+  background: #00ffcc;
+  color: black;
+}
+
+/* ================= SHOP ================= */
+.shop {
+  padding: 40px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* tablet */
+@media (max-width: 900px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .shop {
+    padding: 15px;
+  }
+
+  .product-card {
+    padding: 10px;
+  }
+
+  .product-card h3 {
+    font-size: 14px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+}
+
+/* ================= CARD ================= */
+.product-card {
+  background: #1a1a2e;
+  padding: 15px;
+  border-radius: 15px;
+  transition: 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.product-card h3 {
+  margin: 10px 0 5px;
+}
+
+.product-card p {
+  font-size: 12px;
+  color: #bbb;
+}
+
+.price {
+  color: #00ffcc;
+  margin: 5px 0;
+}
+
+.product-card button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #00ffcc;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">LUMORA</div>
+
+  <div class="search-box">
+    <input type="text" placeholder="Search products..." oninput="searchProducts(this.value)">
+  </div>
+
+  <div class="cart">🛒 <span id="cartCount">0</span></div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <h1>Luxury That Fits Your Lifestyle</h1>
+    <p>Premium fashion, accessories & gadgets curated for you</p>
+    <button>Shop Now</button>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button onclick="filterProducts('all')">All</button>
+  <button onclick="filterProducts('fashion')">Fashion</button>
+  <button onclick="filterProducts('accessories')">Accessories</button>
+  <button onclick="filterProducts('gadgets')">Gadgets</button>
+</div>
+
+<!-- PRODUCTS -->
+<div class="shop">
+  <div class="product-grid" id="productGrid"></div>
+</div>
+
+<script>
+const products = [
+  {id:1, name:"Classic Shirt", price:12000, category:"fashion", desc:"Premium cotton shirt", img:"shirt.jpg"},
+  {id:2, name:"Leather Bag", price:25000, category:"accessories", desc:"Luxury leather Bag", img:"bag.jpg"},
+  {id:3, name:"Smart Watch", price:30000, category:"gadgets", desc:"Modern smartwatch", img:"smart.jpg"},
+  {id:4, name:"Sneakers", price:18000, category:"fashion", desc:"Comfortable sneakers", img:"sneakers_1.jpg"},
+  {id:5, name:"Headphones", price:15000, category:"gadgets", desc:"High bass sound", img:"headset_1.jpg"},
+];
+
+let cart = [];
+let cartCount = document.getElementById("cartCount");
+
+let currentCategory = "all";
+let currentSearch = "";
+
+/* ================= RENDER ================= */
+function render(){
+  let filtered = products;
+
+  if(currentCategory !== "all"){
+    filtered = filtered.filter(p => p.category === currentCategory);
+  }
+
+  if(currentSearch !== ""){
+    filtered = filtered.filter(p =>
+      p.name.toLowerCase().includes(currentSearch) ||
+      p.desc.toLowerCase().includes(currentSearch) ||
+      p.category.toLowerCase().includes(currentSearch)
+    );
+  }
+
+  displayProducts(filtered);
+}
+
+/* ================= DISPLAY ================= */
+function displayProducts(list){
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
+
+  if(list.length === 0){
+    grid.innerHTML = "<p style='text-align:center;color:#aaa'>No products found</p>";
+    return;
+  }
+
+  list.forEach(p => {
+    grid.innerHTML += `
+      <div class="product-card">
+        <img src="${p.img}">
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <div class="price">₦${p.price}</div>
+        <button onclick="addToCart(${p.id})">Add to Cart</button>
+      </div>
+    `;
+  });
+}
+
+/* ================= CART ================= */
+function addToCart(id){
+  const item = products.find(p => p.id === id);
+  cart.push(item);
+  cartCount.innerText = cart.length;
+}
+
+/* ================= FILTER ================= */
+function filterProducts(category){
+  currentCategory = category;
+  render();
+}
+
+/* ================= SEARCH (FIXED) ================= */
+function searchProducts(value){
+  currentSearch = value.trim().toLowerCase();
+  render();
+}
+
+/* INIT */
+render();
+</script>
+
+</body>
+</html>
